@@ -1,0 +1,25 @@
+%% Flujograma — Gestión de lotes (consulta, edición única, cierre)
+
+flowchart TB
+    A([Inicio]) --> B[Listar y filtrar lotes]
+    B --> C[Ver detalle del lote y productos]
+    B --> D{¿Acción sobre el lote?}
+
+    D -->|Edición única| E{¿Activo y sin edición previa?}
+    E -->|Sí| F[Editar número, proveedor y productos<br/>una sola vez]
+    F --> G[PUT edición única + registro auditoría]
+    E -->|No| B
+
+    D -->|Cerrar lote| H[Marcar lote cerrado]
+    D -->|Eliminar| I[Eliminación forzada si aplica]
+    D -->|Solo consulta| C
+
+    C --> J([Fin])
+    G --> J
+    H --> J
+    I --> J
+
+    style A fill:#1a1a1a,color:#fff
+    style J fill:#1a1a1a,color:#fff
+    style E fill:#fff9c4
+    style D fill:#e3f2fd

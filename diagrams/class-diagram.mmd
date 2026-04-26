@@ -1,0 +1,123 @@
+%% Diagrama de clases — dominio Pyllren (SQLModel / backend/app/models.py)
+%% Tablas: User, Item, Proveedor, Fabricante, Lote, Producto, Auditoria, ConfiguracionSistema
+
+classDiagram
+  direction TB
+
+  class User {
+    <<table>>
+    +UUID id
+    +EmailStr email
+    +bool is_active
+    +bool is_superuser
+    +string full_name
+    +string hashed_password
+    +datetime fecha_creacion
+  }
+
+  class Item {
+    <<table>>
+    +UUID id
+    +string title
+    +string description
+    +UUID owner_id
+  }
+
+  class Proveedor {
+    <<table>>
+    +int id_proveedor
+    +string nombre
+    +string rif
+    +string telefono
+    +string email
+    +string direccion
+    +string ciudad
+    +bool estado
+    +datetime fecha_creacion
+  }
+
+  class Fabricante {
+    <<table>>
+    +int id_fabricante
+    +string nombre
+    +string rif
+    +string contacto
+    +string telefono
+    +string email
+    +string direccion
+    +bool estado
+    +datetime fecha_creacion
+  }
+
+  class Lote {
+    <<table>>
+    +int id_lote
+    +int id_proveedor
+    +UUID id_usuario_recepcion
+    +string numero_lote
+    +string observaciones
+    +datetime fecha_llegada
+    +datetime fecha_registro
+    +string estado
+    +float peso_total_recibido
+    +string unidad_peso
+  }
+
+  class Producto {
+    <<table>>
+    +int id_producto
+    +int id_lote
+    +int id_fabricante
+    +string nombre
+    +string categoria
+    +string elaborado_por
+    +string marca
+    +string presentacion
+    +string lote_producto
+    +date fecha_elaboracion
+    +date fecha_vencimiento
+    +string uso_recomendado
+    +string condicion
+    +float cantidad_tm
+    +float cantidad_kg
+    +int unidades
+    +string estado_calidad
+    +bool apto_consumo
+    +string motivo_rechazo
+    +int stock_minimo
+    +string descripcion
+    +string codigo_interno
+    +string codigo_barras
+    +bool estado
+    +datetime fecha_creacion
+  }
+
+  class Auditoria {
+    <<table>>
+    +int id_auditoria
+    +UUID id_usuario
+    +string entidad_afectada
+    +string id_registro_afectado
+    +string accion
+    +JSON detalle
+    +string resultado
+    +datetime fecha_accion
+  }
+
+  class ConfiguracionSistema {
+    <<table>>
+    +int id
+    +string nombre_almacen
+    +int dias_alerta_vencimiento
+    +string unidad_peso_defecto
+    +datetime fecha_actualizacion
+  }
+
+  %% Asociaciones (FK + Relationship back_populates)
+  User "1" o-- "0..*" Item : items / owner
+  User "1" o-- "0..*" Lote : lotes_recepcionados
+  User "1" o-- "0..*" Auditoria : auditorias
+
+  Proveedor "1" o-- "0..*" Lote : lotes
+  Lote "1" o-- "0..*" Producto : productos
+  Fabricante "1" o-- "0..*" Producto : productos

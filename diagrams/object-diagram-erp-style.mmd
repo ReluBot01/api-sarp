@@ -1,0 +1,68 @@
+%% Diagrama de objetos / E-R estilo ERP (inspirado en iDempiere/ADempiere)
+%% Pyllren: entidades reales de backend/app/models.py
+%% Nota: Mermaid no reproduce iconos del cliente ERP; replica patrón: hubs + colores + agrupación.
+
+flowchart TB
+  %% ========== Sistema (análogo a ad_client / parámetros globales) ==========
+  subgraph sistema["Sistema"]
+    direction TB
+    PY_CONFIG["pyllren<br/>configuracion_sistema"]
+  end
+
+  %% ========== Seguridad / usuarios (análogo a ad_user, ad_role…) ==========
+  subgraph seguridad["Usuarios y permisos"]
+    direction TB
+    PY_USER["pyllren<br/>user"]
+    PY_ITEM["pyllren<br/>item"]
+  end
+
+  %% ========== Catálogos maestros (análogo a c_bpartner, m_product_category…) ==========
+  subgraph catalogos["Catálogos"]
+    direction TB
+    PY_PROV["pyllren<br/>proveedor"]
+    PY_FAB["pyllren<br/>fabricante"]
+  end
+
+  %% ========== Núcleo recepción / inventario (análogo a a_asset como hub) ==========
+  subgraph inventario["Recepción e inventario"]
+    direction TB
+    PY_LOTE(["pyllren<br/>lote"])
+    PY_PROD["pyllren<br/>producto"]
+  end
+
+  %% ========== Trazabilidad ==========
+  subgraph trazabilidad["Auditoría"]
+    PY_AUD["pyllren<br/>auditoria"]
+  end
+
+  %% Relaciones con colores (leyenda abajo en comentarios)
+  %% Rosa: usuario → acciones / propiedad
+  PY_USER -->|"owner_id"| PY_ITEM
+  PY_USER -->|"id_usuario_recepcion"| PY_LOTE
+  PY_USER -->|"id_usuario"| PY_AUD
+
+  %% Verde: maestro → transacción
+  PY_PROV -->|"id_proveedor"| PY_LOTE
+
+  %% Cian: fabricante → línea de producto
+  PY_FAB -->|"id_fabricante"| PY_PROD
+
+  %% Azul oscuro: lote → detalle (1:N)
+  PY_LOTE -->|"id_lote"| PY_PROD
+
+  %% Estilo hubs (como ad_org / a_asset en el ejemplo)
+  classDef hub fill:#fff7ed,stroke:#c2410c,stroke-width:3px
+  classDef entity fill:#ffffff,stroke:#2563eb,stroke-width:2px
+  classDef sistemaNode fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+
+  class PY_LOTE hub
+  class PY_USER,PY_ITEM,PY_PROV,PY_FAB,PY_PROD,PY_AUD entity
+  class PY_CONFIG sistemaNode
+
+  %% Colores de aristas (índices en orden de aparición de enlaces)
+  linkStyle 0 stroke:#ec4899,stroke-width:2px
+  linkStyle 1 stroke:#ec4899,stroke-width:2px
+  linkStyle 2 stroke:#ec4899,stroke-width:2px
+  linkStyle 3 stroke:#22c55e,stroke-width:2px
+  linkStyle 4 stroke:#06b6d4,stroke-width:2px
+  linkStyle 5 stroke:#1d4ed8,stroke-width:3px

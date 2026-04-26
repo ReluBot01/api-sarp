@@ -1,0 +1,19 @@
+%% Flujograma — Recepción de lotes (registro de carga en almacén)
+
+flowchart TB
+    A([Inicio]) --> B[Seleccionar proveedor]
+    B --> C[Completar datos del lote — observaciones]
+    C --> D[Agregar líneas de producto<br/>peso por unidad × unidades]
+    D --> E{¿Proveedor y al menos un producto<br/>con datos coherentes?}
+    E -->|No| D
+    E -->|Sí| F[Calcular peso total de la carga]
+    F --> G[Enviar POST /api/v1/lotes/recepcion]
+    G --> H{¿Respuesta OK?}
+    H -->|No| I[Mostrar error — corregir formulario]
+    I --> D
+    H -->|Sí| J[Lote y productos guardados<br/>auditoría / invalidación de caché]
+    J --> K([Fin — consulta en Lotes / Productos])
+
+    style A fill:#1a1a1a,color:#fff
+    style K fill:#1a1a1a,color:#fff
+    style E fill:#fff9c4

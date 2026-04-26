@@ -1,0 +1,29 @@
+%% Ficha / Mapa de procesos — PDVAL (pyllren)
+%% Vista macro: acceso y módulos del sistema de inventario de almacén
+
+flowchart TB
+    subgraph acceso["Acceso"]
+        INI([Inicio])
+        INI --> AUTH{¿Usuario autenticado?}
+        AUTH -->|No| LOGIN[Pantalla login / recuperación de contraseña]
+        AUTH -->|Sí| APP[Aplicación — layout principal]
+        LOGIN --> AUTH
+    end
+
+    subgraph modulos["Módulos operativos"]
+        APP --> DASH[Inicio / Dashboard]
+        APP --> REC[Recepción de lotes]
+        APP --> LOT[Gestión de lotes]
+        APP --> PRD[Productos]
+        APP --> PRV[Proveedores]
+        APP --> FAB[Fabricantes]
+        APP --> REP[Reportes PDF/Excel]
+        APP --> CFG[Configuración]
+    end
+
+    subgraph admin["Solo superusuario"]
+        APP --> ADM[Administración de usuarios]
+    end
+
+    style INI fill:#1a1a1a,color:#fff
+    style AUTH fill:#fff9c4

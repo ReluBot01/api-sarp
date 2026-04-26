@@ -1,0 +1,175 @@
+classDiagram
+  direction LR
+
+  %% =========================
+  %% ENTIDADES (table=True)
+  %% =========================
+  class User {
+    +uuid id PK
+    +EmailStr email
+    +bool is_active
+    +bool is_superuser
+    +string? full_name
+    +string hashed_password
+    +datetime fecha_creacion
+  }
+
+  class Item {
+    +uuid id PK
+    +string title
+    +string? description
+    +uuid owner_id FK
+  }
+
+  class Proveedor {
+    +int id_proveedor PK
+    +string nombre
+    +string rif
+    +string telefono
+    +string email
+    +string direccion
+    +string ciudad
+    +bool estado
+    +datetime fecha_creacion
+  }
+
+  class Fabricante {
+    +int id_fabricante PK
+    +string nombre
+    +string rif
+    +string? contacto
+    +string? telefono
+    +string? email
+    +string? direccion
+    +bool estado
+    +datetime fecha_creacion
+  }
+
+  class Lote {
+    +int id_lote PK
+    +int id_proveedor FK
+    +uuid? id_usuario_recepcion FK
+    +string numero_lote
+    +string? observaciones
+    +datetime fecha_llegada
+    +datetime fecha_registro
+    +string estado
+    +float peso_total_recibido
+    +string unidad_peso
+  }
+
+  class Producto {
+    +int id_producto PK
+    +int id_lote FK
+    +int? id_fabricante FK
+    +string nombre
+    +string categoria
+    +string? elaborado_por
+    +string? marca
+    +string? presentacion
+    +string? lote_producto
+    +date? fecha_elaboracion
+    +date? fecha_vencimiento
+    +string uso_recomendado
+    +string condicion
+    +float cantidad_tm
+    +float cantidad_kg
+    +int unidades
+    +string estado_calidad
+    +bool apto_consumo
+    +string? motivo_rechazo
+    +int stock_minimo
+    +string? descripcion
+    +string? codigo_interno
+    +string? codigo_barras
+    +bool estado
+    +datetime fecha_creacion
+  }
+
+  class Auditoria {
+    +int id_auditoria PK
+    +uuid id_usuario FK
+    +string entidad_afectada
+    +string id_registro_afectado
+    +string accion
+    +JSON detalle
+    +string resultado
+    +datetime fecha_accion
+  }
+
+  class ConfiguracionSistema {
+    +int id PK
+    +string nombre_almacen
+    +int dias_alerta_vencimiento
+    +string unidad_peso_defecto
+    +datetime fecha_actualizacion
+  }
+
+  %% Relaciones BD (FK / back_populates)
+  User "1" --> "0..*" Item : items / owner
+  User "1" --> "0..*" Lote : lotes_recepcionados / usuario_recepcion
+  User "1" --> "0..*" Auditoria : auditorias / usuario
+
+  Proveedor "1" --> "0..*" Lote : lotes / proveedor
+  Lote "1" --> "0..*" Producto : productos / lote
+  Fabricante "1" --> "0..*" Producto : productos / fabricante
+
+  %% =========================
+  %% DTOs / API MODELS
+  %% =========================
+  class LoteCreate {
+    +string? numero_lote
+    +int id_proveedor
+    +float peso_total_recibido
+    +string unidad_peso
+    +string? observaciones
+  }
+
+  class ProductoLoteCreate {
+    +string nombre
+    +string categoria
+    +int? id_fabricante
+    +string? elaborado_por
+    +date? fecha_vencimiento
+    +int unidades
+    +bool apto_consumo
+  }
+
+  class RecepcionRequest {
+    +LoteCreate lote
+    +ProductoLoteCreate[] productos
+  }
+
+  class ProductoPublicExtended {
+    +int id_producto
+    +int id_lote
+    +string? numero_lote
+    +datetime? fecha_llegada
+    +string? proveedor_nombre
+  }
+
+  class LotePublicExtended {
+    +int id_lote
+    +string numero_lote
+    +ProductoPublic[] productos
+  }
+
+  class AlertaVencimiento {
+    +int id_producto
+    +string nombre
+    +date? fecha_vencimiento
+    +int dias_restantes
+    +string prioridad
+  }
+
+  class AlertasVencimientoPublic {
+    +AlertaVencimiento[] data
+    +int count
+    +int dias_configurados
+  }
+
+  RecepcionRequest --> LoteCreate
+  RecepcionRequest --> ProductoLoteCreate
+  ProductoPublicExtended ..> Producto
+  LotePublicExtended ..> Lote
+  AlertaVencimiento ..> Producto

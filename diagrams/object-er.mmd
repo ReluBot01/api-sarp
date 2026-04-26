@@ -1,0 +1,109 @@
+erDiagram
+  USER {
+    uuid id PK
+    string email
+    boolean is_active
+    boolean is_superuser
+    string full_name
+    string hashed_password
+    datetime fecha_creacion
+  }
+
+  ITEM {
+    uuid id PK
+    string title
+    string description
+    uuid owner_id FK
+  }
+
+  PROVEEDOR {
+    int id_proveedor PK
+    string nombre
+    string rif
+    string telefono
+    string email
+    string direccion
+    string ciudad
+    boolean estado
+    datetime fecha_creacion
+  }
+
+  FABRICANTE {
+    int id_fabricante PK
+    string nombre
+    string rif
+    string contacto
+    string telefono
+    string email
+    string direccion
+    boolean estado
+    datetime fecha_creacion
+  }
+
+  LOTE {
+    int id_lote PK
+    string numero_lote
+    int id_proveedor FK
+    uuid id_usuario_recepcion FK
+    datetime fecha_llegada
+    datetime fecha_registro
+    string estado
+    float peso_total_recibido
+    string unidad_peso
+    string observaciones
+  }
+
+  PRODUCTO {
+    int id_producto PK
+    int id_lote FK
+    int id_fabricante FK
+    string nombre
+    string categoria
+    string elaborado_por
+    string marca
+    string presentacion
+    string lote_producto
+    date fecha_elaboracion
+    date fecha_vencimiento
+    string uso_recomendado
+    string condicion
+    float cantidad_tm
+    float cantidad_kg
+    int unidades
+    string estado_calidad
+    boolean apto_consumo
+    string motivo_rechazo
+    int stock_minimo
+    string descripcion
+    string codigo_interno
+    string codigo_barras
+    boolean estado
+    datetime fecha_creacion
+  }
+
+  AUDITORIA {
+    int id_auditoria PK
+    uuid id_usuario FK
+    string entidad_afectada
+    string id_registro_afectado
+    string accion
+    json detalle
+    string resultado
+    datetime fecha_accion
+  }
+
+  CONFIGURACION_SISTEMA {
+    int id PK
+    string nombre_almacen
+    int dias_alerta_vencimiento
+    string unidad_peso_defecto
+    datetime fecha_actualizacion
+  }
+
+  USER ||--o{ ITEM : "owner_id"
+  USER ||--o{ LOTE : "id_usuario_recepcion"
+  USER ||--o{ AUDITORIA : "id_usuario"
+
+  PROVEEDOR ||--o{ LOTE : "id_proveedor"
+  LOTE ||--o{ PRODUCTO : "id_lote"
+  FABRICANTE ||--o{ PRODUCTO : "id_fabricante"
